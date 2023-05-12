@@ -1,33 +1,63 @@
 <?php
-require_once('app/controllers/usersController.php');
+include('app/config.php');
+// Подключаем файлы классов
+require_once 'app/controllers/usersController.php';
+require_once 'app/controllers/tasksController.php';
 
-if (!isset($_COOKIE["user_id"])) {
+// Создаём объекты контроллеров
+$usersController = new usersController();
+$taskController = new taskController();
 
-    // Создание объекта контроллера
-    $usersController = new usersController();
+// Определяем запрошенный URL и HTTP-метод
+$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
 
-    // Обработка POST-запроса на регистрацию пользователя
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/user') {
+if (!isset($_COOKIE['user_id'])) {
+    // Маршрутизация запросов для пользователей
+    if ($method === 'POST' && $url === '/user') {
+        // Обработка POST-запроса на регистрацию пользователя
         $usersController->store();
-    } // Обработка GET-запроса на регистрацию пользователя или при первом переходе на сайт
-    else if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_SERVER['REQUEST_URI'] === '/register' || $_SERVER['REQUEST_URI'] === '/')) {
+    } elseif ($method === 'GET' && ($url === '/register' || $url === '/')) {
+        // Обработка GET-запроса на регистрацию пользователя или при первом переходе на сайт
         $usersController->register();
-    } // Обработка POST-запроса на авторизацию пользователя
-    else if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/login') {
+    } elseif ($method === 'POST' && $url === '/login') {
+        // Обработка POST-запроса на авторизацию пользователя
         $usersController->authenticate();
-    } // Обработка GET-запроса на вывод формы авторизации
-    else if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/login') {
+    } elseif ($method === 'GET' && $url === '/login') {
+        // Обработка GET-запроса на вывод формы авторизации
         $usersController->login();
     }
-
-} // Обработка GET-запроса на выход пользователя
-else if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/logout') {
-
-    $usersController = new usersController();
-    $usersController->logout();
-
 } else {
-
-    echo "Вы авторизованы!";
-
+// Маршрутизация запросов для задач
+    if ($method === 'GET' && strpos($url, '/tasks/edit/') === 0) {
+        // Обработка GET-запроса на вывод формы редактирования задачи (например, "/tasks/edit/42")
+        $id = substr($url, strrpos($url, '/') + 1);
+        $taskController->edit($id);
+    } elseif ($method === 'POST' && strpos($url, '/tasks/update/') === 0) {
+        // Обработка POST-запроса на сохранение изменений задачи (например, "/tasks/update/42")
+        $id = substr($url, strrpos($url, '/') + 1);
+        $taskController->update($id);
+    } elseif ($method === 'GET' && $url === '/tasks/create') {
+        // Обработка GET-запроса на вывод формы создания новой задачи
+        $taskController->create();
+    } elseif ($method === 'GET' && strpos($url, '/tasks/') === 0) {
+        // Обработка GET-запроса на просмотр одной задачи (например, "/tasks/42")
+        $id = substr($url, strrpos($url, '/') + 1);
+        $taskController->show($id);
+    } elseif ($method === 'POST' && $url === '/tasks') {
+        // Обработка POST-запроса на добавление новой задачи
+        $taskController->store();
+    } elseif ($method === 'POST' && strpos($url, '/tasks/delete/') === 0) {
+        // Обработка POST-запроса на удаление задачи (например, "/tasks/delete/42")
+        $id = substr($url, strrpos($url, '/') + 1);
+        $taskController->delete($id);
+    } elseif ($method === 'GET' && ($url === '/tasks' || $url === '/')) {
+        // Обработка GET-запроса на список задач
+        $taskController->index();
+    } elseif ($method === 'GET' && $url === '/logout') {
+        $usersController->logout();
+    } else {
+        header('HTTP/1.0 404 Not Found');
+        echo 'Page not found.';
+    }
 }
