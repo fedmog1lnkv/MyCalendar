@@ -54,6 +54,8 @@ class User
         $res = $stmt->get_result();
         if ($res->num_rows == 1) {
             $data = $res->fetch_assoc();
+            $this->email = $data['email'];
+            $this->password = $data['password'];
             return ['email' => $data['email'], 'password' => $data['password']];
         } else {
             return false;

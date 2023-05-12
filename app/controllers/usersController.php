@@ -1,5 +1,4 @@
 <?php
-include('app/config.php');
 include('app/models/User.php');
 
 use models\User;
