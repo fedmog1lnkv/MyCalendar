@@ -42,22 +42,38 @@ class User
         $this->password = $password;
     }
 
-    public function load($id)
+    public function getUserEmailAndPasswordById($id)
     {
         /*
-         * Загружает информацию пользователя из базы данных по его идентификатору, если такой пользователь существует.
-         * При успехе метод возвращает true, иначе - false.
+         * Возвращает email и password пользователя из базы данных по его id, если такой пользователь существует.
+         * При успехе метод возвращает массив ['email' => $email, 'password' => $password], иначе - false.
          */
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT email, password FROM users WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $res = $stmt->get_result();
         if ($res->num_rows == 1) {
             $data = $res->fetch_assoc();
-            $this->email = $data['email'];
-            $this->password = $data['password'];
-            $this->id = $data['id'];
-            return true;
+            return ['email' => $data['email'], 'password' => $data['password']];
+        } else {
+            return false;
+        }
+    }
+
+
+    public function getUserIdByEmailAndPassword($email, $password)
+    {
+        /*
+         * Возвращает id пользователя из базы данных по email и password.
+         * Если пользователь не найден или пароль неверный, метод возвращает false.
+         */
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ? AND password = ?");
+        $stmt->bind_param('ss', $email, $password);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        if ($res->num_rows == 1) {
+            $row = $res->fetch_assoc();
+            return $row['id'];
         } else {
             return false;
         }
@@ -94,5 +110,18 @@ class User
             $stmt->execute();
             $this->id = 0;
         }
+    }
+
+    public function exists()
+    {
+        /*
+         * Проверяет, существует ли пользователь с данным email и password в базе данных.
+         * Если пользователь существует, метод возвращает true, иначе - false.
+         */
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ? AND password = ?");
+        $stmt->bind_param('ss', $this->email, $this->password);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        return $res->num_rows == 1;
     }
 }
