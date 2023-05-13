@@ -22,14 +22,18 @@ class usersController
         $db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
         $user = new User($db, $email, $password);
 
-        // сохраняем пользователя в базе данных
-        $user->save();
+        if ($user->exists()) {
+            require_once('app/views/user/register_error.php');
+        } else {
+            // сохраняем пользователя в базе данных
+            $user->save();
 
-        // устанавливаем cookie с id пользователя на 30 дней
-        setcookie("user_id", $user->getUserIdByEmailAndPassword($email, $password), time() + (30 * 24 * 60 * 60), "/");
+            // устанавливаем cookie с id пользователя на 30 дней
+            setcookie("user_id", $user->getUserIdByEmailAndPassword($email, $password), time() + (30 * 24 * 60 * 60), "/");
 
-        // перенаправляем на страницу авторизации
-        $this->login();
+            // перенаправляем на страницу авторизации
+            $this->login();
+        }
     }
 
     public function login()
