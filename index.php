@@ -26,7 +26,11 @@ if (!isset($_COOKIE['user_id'])) {
     } elseif ($method === 'GET' && $url === '/login') {
         // Обработка GET-запроса на вывод формы авторизации
         $usersController->login();
+    }elseif ($method === 'GET' && $url === '/login_error'){
+        //  Обработка GET-запроса на вывод формы авторизации с ошибкой
+        $usersController->login_error();
     }
+
 } else {
 // Маршрутизация запросов для задач
     if ($method === 'GET' && strpos($url, '/tasks/edit/') === 0) {
@@ -40,7 +44,21 @@ if (!isset($_COOKIE['user_id'])) {
     } elseif ($method === 'GET' && $url === '/tasks/create') {
         // Обработка GET-запроса на вывод формы создания новой задачи
         $taskController->create();
-    } elseif ($method === 'GET' && strpos($url, '/tasks/') === 0) {
+    } elseif ($method === 'GET' && $url === '/tasks/filter') {
+        // Получаем параметры фильтра из GET-запроса
+        $start_date = !empty($_GET['start_date']) ? trim($_GET['start_date']) : '';
+        $status = !empty($_GET['status']) ? trim($_GET['status']) : '';
+
+        // Формируем массив фильтров
+        $filters = [
+            'start_date' => $start_date,
+            'status' => $status
+        ];
+
+        // Обработка GET-запроса на вывод фильтрованных задач
+        $taskController->filter($filters);
+    }
+    elseif ($method === 'GET' && strpos($url, '/tasks/') === 0) {
         // Обработка GET-запроса на просмотр одной задачи (например, "/tasks/42")
         $id = substr($url, strrpos($url, '/') + 1);
         $taskController->show($id);
