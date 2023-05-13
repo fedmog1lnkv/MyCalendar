@@ -29,13 +29,19 @@ class usersController
         setcookie("user_id", $user->getUserIdByEmailAndPassword($email, $password), time() + (30 * 24 * 60 * 60), "/");
 
         // перенаправляем на страницу авторизации
-        header('Location: /login');
+        $this->login();
     }
 
     public function login()
     {
         // выводим форму для авторизации пользователя
         require_once('app/views/user/login.php');
+    }
+
+    public function login_error()
+    {
+        // выводим форму для авторизации пользователя
+        require_once('app/views/user/login_error.php');
     }
 
     public function authenticate()
@@ -55,7 +61,7 @@ class usersController
             header('Location: /');
         } else {
             // если нет – выводим сообщение об ошибке
-            echo 'Пользователь с такими данными не найден';
+            header('Location: /login_error');
         }
     }
 

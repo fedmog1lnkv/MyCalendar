@@ -129,6 +129,43 @@ class Task
         return $tasks;
     }
 
+    public function getFiltered($filters)
+    {
+        $query = "SELECT * FROM tasks WHERE user_id = '{$this->user->getId()}'";
+
+        // Проверяем, задан ли фильтр по статусу
+        if (!empty($filters['status'])) {
+            $status = $this->db->real_escape_string(trim($filters['status']));
+            $query .= " AND `status` = '{$status}'";
+        }
+
+        // Проверяем, задан ли фильтр по дате и времени начала задачи
+        if (!empty($filters['start_date'])) {
+            $start_date = date('Y-m-d', strtotime($filters['start_date']));
+            $query .= " AND DATE(`start_date`) = '{$start_date}'";
+        }
+
+        $result = $this->db->query($query);
+
+        $tasks = [];
+        while ($row = $result->fetch_assoc()) {
+            $tasks[] = new Task(
+                $this->db,
+                $this->user,
+                $row['theme'],
+                $row['type'],
+                $row['location'],
+                $row['start_date'],
+                $row['duration'],
+                $row['comment'],
+                $row['status'],
+                $row['id']
+            );
+        }
+
+        return $tasks;
+    }
+
     public function getById($id)
     {
         $query = "SELECT * FROM tasks WHERE id = ?";
@@ -203,7 +240,8 @@ class Task
         */
         $stmt = $this->db->prepare('UPDATE tasks SET user_id = ?, theme = ?, type = ?, location = ?, start_date = ?, duration = ?, comment = ?, status = ? WHERE id = ?');
         $user_id = $this->user->getId();
-        $stmt->bind_param('issssisii', $user_id, $this->theme, $this->type, $this->location, $this->start_date, $this->duration, $this->comment, $this->status, $this->id);
+        echo $this->status;
+        $stmt->bind_param('issssissi', $user_id, $this->theme, $this->type, $this->location, $this->start_date, $this->duration, $this->comment, $this->status, $this->id);
         $stmt->execute();
 
         return $stmt->affected_rows > 0;

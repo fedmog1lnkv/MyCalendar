@@ -29,6 +29,29 @@ class taskController
         require_once('app/views/task/index.php');
     }
 
+    public function filter($filters)
+    {
+        // Получаем пользователя из базы данных
+        $db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $userId = $_COOKIE['user_id'];
+        $user = new User($db, id: $userId);
+        $user->getUserEmailAndPasswordById($userId);
+
+        //Получаем данные из формы для фильтрации
+        $task = new Task($db);
+        $task->setUser($user);
+        $tasks = $task->getFiltered($filters);
+
+        // Объединяем данные пользователя и отфильтрованный список задач в один массив
+        $data = [
+            'user' => $user,
+            'tasks' => $tasks
+        ];
+//        print_r($tasks);
+        // Передаём массив данных в представление
+        require_once('app/views/task/index.php');
+    }
+
     public function show($id)
     {
         // получаем задачу из базы данных и передаём её в представление
@@ -87,8 +110,6 @@ class taskController
 
     public function update($id)
     {
-
-
         // обновляем задачу в базе данных
         $db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
@@ -107,7 +128,6 @@ class taskController
             $_POST['status'],
             $id
         );
-        require_once('app/views/task/edit.php');
 
         $task->update();
 
