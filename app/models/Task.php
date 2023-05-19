@@ -4,16 +4,17 @@ namespace models;
 
 class Task
 {
-    private $id;
-    private $theme;
-    private $type;
-    private $location;
-    private $start_date;
-    private $duration;
-    private $comment;
-    private $status;
-    private $user;
-    private $db;
+    private $id; // Идентификатор задачи
+    private $theme; // Тема задачи
+    private $type; // Тип задачи
+    private $location; // Место выполнения задачи
+    private $start_date; // Дата начала задачи
+    private $duration; // Продолжительность задачи
+    private $comment; // Комментарий к задаче
+    private $status; // Статус задачи
+    private $user; // Ответственный пользователь за задачу
+    private $db; // Ссылка на объект базы данных
+
 
     public function __construct(\mysqli $db, User $user = null, $theme = '', $type = '', $location = '', $start_date = null, $duration = 0, $comment = '', $status = 'in_work', $id = 0)
     {
@@ -44,69 +45,69 @@ class Task
         return $this->id;
     }
 
-    // Getter для theme
     public function getTheme()
     {
         return $this->theme;
     }
 
-    // Getter для type
     public function getType()
     {
         return $this->type;
     }
 
-    // Getter для location
     public function getLocation()
     {
         return $this->location;
     }
 
-    // Getter для startDate
     public function getStartDate()
     {
         return $this->start_date;
     }
 
-    // Getter для duration
     public function getDuration()
     {
         return $this->duration;
     }
 
-    // Getter для comment
     public function getComment()
     {
         return $this->comment;
     }
 
-    // Getter для status
     public function getStatus()
     {
         return $this->status;
     }
 
+
+    /**
+     * Создает новую задачу в базе данных
+     *
+     * @return void
+     */
     public function create()
     {
-        /*
-         * Создать новую задачу
-         */
         $stmt = $this->db->prepare('INSERT INTO tasks (user_id, theme, type, location, start_date, duration, comment) VALUES (?, ?, ?, ?, ?, ?, ?)');
         $user_id = $this->user->getId();
         $stmt->bind_param('issssis', $user_id, $this->theme, $this->type, $this->location, $this->start_date, $this->duration, $this->comment);
         $stmt->execute();
+        // Установка идентификатора задачи равным возвращенному значению из базы данных
         $this->id = $stmt->insert_id;
     }
 
+    /**
+     * Возвращает массив всех задач пользователя
+     *
+     * @return array Массив объектов задач
+     */
     public function getAllByUser()
     {
-        /*
-         * Получить все задачи пользователя
-         */
         $stmt = $this->db->prepare('SELECT * FROM tasks WHERE user_id = ?');
         $user_id = $this->user->getId();
         $stmt->bind_param('i', $user_id);
         $stmt->execute();
+
         $result = $stmt->get_result();
 
         $tasks = array();
@@ -129,6 +130,13 @@ class Task
         return $tasks;
     }
 
+    /**
+     * Возвращает массив задач, отфильтрованных по статусу и/или дате начала, для пользователя
+     *
+     * @param array $filters Ассоциативный массив фильтров (status - статус задачи, start_date - дата начала задачи)
+     *
+     * @return array Массив объектов задач
+     */
     public function getFiltered($filters)
     {
         $query = "SELECT * FROM tasks WHERE user_id = '{$this->user->getId()}'";
@@ -166,6 +174,13 @@ class Task
         return $tasks;
     }
 
+    /**
+     * Возвращает объект задачи с указанным идентификатором
+     *
+     * @param int $id Идентификатор задачи
+     *
+     * @return void
+     */
     public function getById($id)
     {
         $query = "SELECT * FROM tasks WHERE id = ?";
@@ -188,6 +203,12 @@ class Task
         $this->status = $data['status'];
     }
 
+
+    /**
+     * Возвращает статус задачи в текстовом виде
+     *
+     * @return string Текстовое представление статуса задачи ('Выполняется', 'Выполнена' или 'Не выполнена')
+     */
     public function getNormalStatus()
     {
         switch ($this->status) {
@@ -203,6 +224,11 @@ class Task
         }
     }
 
+    /**
+     * Возвращает тип задачи в текстовом виде
+     *
+     * @return string Текстовое представление типа задачи ('Встреча', 'Звонок', 'Совещание' или 'Дело')
+     */
     public function getNormalType()
     {
         switch ($this->type) {
@@ -221,23 +247,26 @@ class Task
         }
     }
 
+    /**
+     * Удаляет задачу из базы данных
+     *
+     * @return void
+     */
     public function delete()
     {
-        /*
-        * Удалить задачу
-        */
         $stmt = $this->db->prepare('DELETE FROM tasks WHERE id = ? AND user_id = ?');
         $user_id = $this->user->getId();
         $stmt->bind_param('ii', $this->id, $user_id);
         $stmt->execute();
     }
 
-
+    /**
+     * Обновляет информацию о задаче в базе данных
+     *
+     * @return bool Возвращает true, если обновление прошло успешно; в противном случае - false.
+     */
     public function update()
     {
-        /*
-        * Обновление информации о задаче в базе данных
-        */
         $stmt = $this->db->prepare('UPDATE tasks SET user_id = ?, theme = ?, type = ?, location = ?, start_date = ?, duration = ?, comment = ?, status = ? WHERE id = ?');
         $user_id = $this->user->getId();
         echo $this->status;

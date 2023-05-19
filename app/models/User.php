@@ -4,10 +4,10 @@ namespace models;
 
 class User
 {
-    private $id;
-    private $email;
-    private $password;
-    private $db;
+    private $id; // Идентификатор пользователя
+    private $email; // Почта пользователя
+    private $password; // Пароль пользователя
+    private $db; // Ссылка на объект базы данных
 
     public function __construct(\mysqli $db, $email = '', $password = '', $id = 0)
     {
@@ -42,12 +42,16 @@ class User
         $this->password = $password;
     }
 
+    /**
+     * Возвращает email и password пользователя из базы данных по его id, если такой пользователь существует.
+     * При успехе метод возвращает массив ['email' => $email, 'password' => $password], иначе - false.
+     *
+     * @param int $id Идентификатор пользователя.
+     *
+     * @return array|false Массив с email и password пользователя или false, если пользователь не найден.
+     */
     public function getUserEmailAndPasswordById($id)
     {
-        /*
-         * Возвращает email и password пользователя из базы данных по его id, если такой пользователь существует.
-         * При успехе метод возвращает массив ['email' => $email, 'password' => $password], иначе - false.
-         */
         $stmt = $this->db->prepare("SELECT email, password FROM users WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -62,13 +66,17 @@ class User
         }
     }
 
-
+    /**
+     * Возвращает id пользователя из базы данных по email и password.
+     * Если пользователь не найден или пароль неверный, метод возвращает false.
+     *
+     * @param string $email Email пользователя.
+     * @param string $password Пароль пользователя.
+     *
+     * @return int|false Идентификатор пользователя или false, если пользователь не найден или пароль неверный.
+     */
     public function getUserIdByEmailAndPassword($email, $password)
     {
-        /*
-         * Возвращает id пользователя из базы данных по email и password.
-         * Если пользователь не найден или пароль неверный, метод возвращает false.
-         */
         $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ? AND password = ?");
         $stmt->bind_param('ss', $email, $password);
         $stmt->execute();
@@ -81,13 +89,15 @@ class User
         }
     }
 
+    /**
+     * Сохраняет текущий объект пользователя в базе данных.
+     * Если идентификатор пользователя равен 0, то выполняется вставка,
+     * иначе пользователь обновляется.
+     *
+     * @return void
+     */
     public function save()
     {
-        /*
-         * Сохраняет текущий объект пользователя в базе данных.
-         * Если идентификатор пользователя равен 0, то выполняется вставка,
-         * иначе пользователь обновляется.
-         */
         if ($this->id == 0) {
             $stmt = $this->db->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
             $stmt->bind_param('ss', $this->email, $this->password);
@@ -100,12 +110,14 @@ class User
         }
     }
 
+    /**
+     * Удаляет текущего пользователя из базы данных,
+     * если его идентификатор не равен 0.
+     *
+     * @return void
+     */
     public function delete()
     {
-        /*
-         * Удаляет текущего пользователя из базы данных,
-         * если его идентификатор не равен 0.
-         */
         if ($this->id != 0) {
             $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
             $stmt->bind_param('i', $this->id);
@@ -114,12 +126,13 @@ class User
         }
     }
 
+    /**
+     * Проверяет, существует ли пользователь с данным email и password в базе данных.
+     *
+     * @return bool Возвращает true, если пользователь существует, иначе - false.
+     */
     public function exists()
     {
-        /*
-         * Проверяет, существует ли пользователь с данным email и password в базе данных.
-         * Если пользователь существует, метод возвращает true, иначе - false.
-         */
         $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ? AND password = ?");
         $stmt->bind_param('ss', $this->email, $this->password);
         $stmt->execute();
