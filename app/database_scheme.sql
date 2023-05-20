@@ -23,3 +23,5 @@ CREATE TABLE tasks
     status     VARCHAR(20)  DEFAULT 'in_work',      -- статус задачи
     PRIMARY KEY (id)
 );
+
+ALTER TABLE tasks ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id);
