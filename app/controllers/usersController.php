@@ -41,8 +41,7 @@ class usersController
             // Устанавливаем cookie с id пользователя на 30 дней
             setcookie("user_id", $user->getUserIdByEmailAndPassword($email, $password), time() + (30 * 24 * 60 * 60), "/");
 
-            // Перенаправляем на страницу авторизации
-            $this->login();
+            header('Location: /');
         }
     }
 
