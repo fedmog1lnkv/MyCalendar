@@ -133,10 +133,10 @@ class User
      */
     public function exists()
     {
-        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ? AND password = ?");
-        $stmt->bind_param('ss', $this->email, $this->password);
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->bind_param('s', $this->email);
         $stmt->execute();
         $res = $stmt->get_result();
-        return $res->num_rows == 1;
+        return $res->num_rows >= 1;
     }
 }
