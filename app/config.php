@@ -1,9 +1,9 @@
 <?php
 
-const DB_HOST = 'localhost';
+const DB_HOST = 'my-calendar-db';
 const DB_NAME = 'my_calendar';
-const DB_USER = 'root';
-const DB_PASSWORD = '***';
+const DB_USER = 'my-calendar-user';
+const DB_PASSWORD = '1234';
 
 try {
     $db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
