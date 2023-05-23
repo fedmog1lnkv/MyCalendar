@@ -84,8 +84,7 @@ class usersController
             setcookie("user_id", $user->getUserIdByEmailAndPassword($email, $password), time() + (30 * 24 * 60 * 60), "/");
 
             // перенаправляем на главную страницу
-            $taskController = new taskController();
-            $taskController->index();
+            header('Location: /');
         } else {
             // если нет – выводим сообщение об ошибке
             header('Location: /login_error');
