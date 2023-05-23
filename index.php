@@ -46,6 +46,12 @@ if (!isset($_COOKIE['user_id'])) {
         // Обработка GET-запроса на вывод формы создания новой задачи
         $taskController->create();
     } elseif ($method === 'GET' && $url === '/tasks/filter') {
+
+        if (empty($_GET)){
+            $url_items = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+            parse_str($url_items, $_GET);
+        }
+
         // Получаем параметры фильтра из GET-запроса
         $start_date = !empty($_GET['start_date']) ? trim($_GET['start_date']) : '';
         $status = !empty($_GET['status']) ? trim($_GET['status']) : '';
