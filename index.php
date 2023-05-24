@@ -27,7 +27,7 @@ if (!isset($_COOKIE['user_id'])) {
     } elseif ($method === 'GET' && $url === '/login') {
         // Обработка GET-запроса на вывод формы авторизации
         $usersController->login();
-    }elseif ($method === 'GET' && $url === '/login_error'){
+    } elseif ($method === 'GET' && $url === '/login_error') {
         //  Обработка GET-запроса на вывод формы авторизации с ошибкой
         $usersController->login_error();
     }
@@ -47,7 +47,7 @@ if (!isset($_COOKIE['user_id'])) {
         $taskController->create();
     } elseif ($method === 'GET' && $url === '/tasks/filter') {
 
-        if (empty($_GET)){
+        if (empty($_GET)) {
             $url_items = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
             parse_str($url_items, $_GET);
         }
@@ -64,8 +64,7 @@ if (!isset($_COOKIE['user_id'])) {
 
         // Обработка GET-запроса на вывод фильтрованных задач
         $taskController->filter($filters);
-    }
-    elseif ($method === 'GET' && strpos($url, '/tasks/') === 0) {
+    } elseif ($method === 'GET' && strpos($url, '/tasks/') === 0) {
         // Обработка GET-запроса на просмотр одной задачи (например, "/tasks/42")
         $id = substr($url, strrpos($url, '/') + 1);
         $taskController->show($id);
@@ -76,6 +75,10 @@ if (!isset($_COOKIE['user_id'])) {
         // Обработка POST-запроса на удаление задачи (например, "/tasks/delete/42")
         $id = substr($url, strrpos($url, '/') + 1);
         $taskController->delete($id);
+    } elseif ($method === 'POST' && strpos($url, '/tasks/mark_done/') === 0) {
+        // Обработка POST-запроса на пометку о выполнении задачи
+        $id = substr($url, strrpos($url, '/') + 1);
+        $taskController->mark_done($id);
     } elseif ($method === 'GET' && ($url === '/tasks' || $url === '/')) {
         // Обработка GET-запроса на список задач
         $taskController->index();

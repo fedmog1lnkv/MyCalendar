@@ -37,10 +37,18 @@
 
             <!--        <a href="/tasks/edit/--><?php //echo $task->getID(); ?><!--">Редактировать задачу</a>-->
 
+            <?php
+            if ($task->getNormalStatus() !== 'Выполнена') {
+                echo '<form action="/tasks/mark_done/' . $task->getID() . '" method="POST" class="w-400 mw-full">
+              <input type="hidden" name="_method" value="DELETE">
+              <button class="btn btn-primary btn-block" style="margin-top: 10px;" type="submit">Выполнено</button>
+              </form>';
+            }
+            ?>
+
             <form action="/tasks/delete/<?php echo $task->getID(); ?>" method="POST" class="w-400 mw-full">
                 <input type="hidden" name="_method" value="DELETE">
                 <button class="btn btn-danger btn-block" style="margin-top: 10px;" type="submit">Удалить задачу</button>
-
             </form>
         </div>
     </div>

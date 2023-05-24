@@ -202,4 +202,22 @@ class taskController
         // Перенаправляем на главную страницу задач
         header('Location: /tasks');
     }
+
+    /**
+     * Помечает задачу как выполненную с указанным идентификатором из базы данных.
+     *
+     * @param int $id Идентификатор удаляемой задачи.
+     */
+    public function mark_done(string $id)
+    {
+        $db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $task = new Task($db, id: $id, status: 'done');
+
+        $userId = $_COOKIE['user_id'];
+        $user = new User($db, id: $userId);
+        $user->getUserEmailAndPasswordById($userId);
+
+        $task->mark_done();
+        header('Location: /tasks');
+    }
 }

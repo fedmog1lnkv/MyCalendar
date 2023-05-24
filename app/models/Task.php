@@ -275,4 +275,18 @@ class Task
         return $stmt->affected_rows > 0;
     }
 
+    /**
+     * Делает задачу выполненной в базе данных
+     *
+     * @return bool Возвращает true, если обновление прошло успешно; в противном случае - false.
+     */
+    public function mark_done()
+    {
+        $stmt = $this->db->prepare('UPDATE tasks SET status = ? WHERE id = ?');
+        $stmt->bind_param('si', $this->status, $this->id);
+        $stmt->execute();
+
+        return $stmt->affected_rows > 0;
+    }
+
 }
