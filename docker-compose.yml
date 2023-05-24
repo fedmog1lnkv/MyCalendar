@@ -6,11 +6,14 @@ services:
       - "3306:3306"
     networks:
       - my-calendar-network
+    container_name: my-calendar-db
   app:
     build: ./
     ports:
       - "80:80"
     networks:
       - my-calendar-network
+    container_name: my-calendar
+
 networks:
   my-calendar-network:
