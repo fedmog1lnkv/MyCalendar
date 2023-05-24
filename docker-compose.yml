@@ -1,0 +1,16 @@
+version: '3'
+services:
+  db:
+    build: ./app/db/
+    ports:
+      - "3306:3306"
+    networks:
+      - my-calendar-network
+  app:
+    build: ./app/
+    ports:
+      - "80:80"
+    networks:
+      - my-calendar-network
+networks:
+  my-calendar-network:
