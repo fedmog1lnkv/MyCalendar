@@ -269,7 +269,6 @@ class Task
     {
         $stmt = $this->db->prepare('UPDATE tasks SET user_id = ?, theme = ?, type = ?, location = ?, start_date = ?, duration = ?, comment = ?, status = ? WHERE id = ?');
         $user_id = $this->user->getId();
-        echo $this->status;
         $stmt->bind_param('issssissi', $user_id, $this->theme, $this->type, $this->location, $this->start_date, $this->duration, $this->comment, $this->status, $this->id);
         $stmt->execute();
 
