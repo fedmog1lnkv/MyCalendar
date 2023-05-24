@@ -1,6 +1,6 @@
 <?php
 
-const DB_HOST = 'my-calendar-db';
+const DB_HOST = 'mycalendar_db';
 const DB_NAME = 'my_calendar';
 const DB_USER = 'my-calendar-user';
 const DB_PASSWORD = '1234';

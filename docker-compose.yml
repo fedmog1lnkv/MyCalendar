@@ -7,7 +7,7 @@ services:
     networks:
       - my-calendar-network
   app:
-    build: ./app/
+    build: ./
     ports:
       - "80:80"
     networks:
